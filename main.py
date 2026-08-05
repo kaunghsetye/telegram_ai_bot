@@ -2,10 +2,12 @@ import os
 import time
 import logging
 import requests
+import threading
 from io import BytesIO
 from PIL import Image
 from pypdf import PdfReader
 from bs4 import BeautifulSoup
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from youtube_transcript_api import YouTubeTranscriptApi
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
@@ -354,6 +356,18 @@ async def clear_bill(update: Update, context: ContextTypes.DEFAULT_TYPE):
     bill_data[update.effective_chat.id] = {}
     await update.message.reply_text("🗑️ Cleared all bills.")
 
+# --- DUMMY SERVER (Render အတွက်) ---
+class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is Running Alive!")
+
+def run_dummy_server():
+    port = int(os.environ.get("PORT", 10000))
+    server = HTTPServer(("0.0.0.0", port), SimpleHTTPRequestHandler)
+    server.serve_forever()
+
 # --- MAIN APP STARTUP ---
 def main():
     if not TELEGRAM_TOKEN or not GEMINI_API_KEY:
@@ -380,30 +394,11 @@ def main():
     app.add_handler(MessageHandler(filters.PHOTO, handle_image))
     app.add_handler(MessageHandler(filters.VOICE, handle_voice))
 
-import os
-import threading
-from http.server import BaseHTTPRequestHandler, HTTPServer
-
-
-# Render Web Service အတွက် Dummy Port ဖွင့်ပေးခြင်း
-class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
-
-  def do_GET(self):
-    self.send_response(200)
-    self.end_headers()
-    self.wfile.write(b"Bot is Running Alive!")
-
-
-def run_dummy_server():
-  port = int(os.environ.get("PORT", 10000))
-  server = HTTPServer(("0.0.0.0", port), SimpleHTTPRequestHandler)
-  server.serve_forever()
-
+    print("🤖 All-in-One Bot 100% Ready...")
+    app.run_polling()
 
 if __name__ == "__main__":
-  # Web Port ကို background မှာ run ပေးမည်
-  threading.Thread(target=run_dummy_server, daemon=True).start()
-
-  # Telegram Bot ကို စတင်မည်
-  print("🤖 All-in-One Bot 100% Ready...")
-  app.run_polling()
+    # Web Port ကို background မှာ run ပေးမည်
+    threading.Thread(target=run_dummy_server, daemon=True).start()
+    # Main Bot ကို စတင်မည်
+    main()
