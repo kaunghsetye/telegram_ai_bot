@@ -1,4 +1,7 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()  # .env ဖိုင်ထဲက keys များကို ဆွဲယူပေးမည်
 import time
 import logging
 import requests
