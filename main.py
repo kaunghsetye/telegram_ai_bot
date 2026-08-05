@@ -33,7 +33,7 @@ ADMIN_ID = os.getenv("ADMIN_ID") # Admin Telegram User ID (Optional)
 
 # Gemini Setup
 genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-pro')
 
 # In-Memory Databases
 bill_data = {}
