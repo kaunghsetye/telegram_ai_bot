@@ -380,9 +380,7 @@ def main():
     app.add_handler(MessageHandler(filters.PHOTO, handle_image))
     app.add_handler(MessageHandler(filters.VOICE, handle_voice))
 
-    print("🤖 All-in-One Bot 100% Ready...")
-    application.run_polling()
-   import os
+import os
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
