@@ -382,6 +382,28 @@ def main():
 
     print("🤖 All-in-One Bot 100% Ready...")
     app.run_polling()
+    import os
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import threading
 
+# Render Web Service အတွက် Dummy Port ဖွင့်ပေးခြင်း
+class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is Running Alive!")
+
+def run_dummy_server():
+    port = int(os.environ.get("PORT", 10000))
+    server = HTTPServer(('0.0.0.0', port), SimpleHTTPRequestHandler)
+    server.serve_forever()
+
+if __name__ == '__main__':
+    # Web Port ကို background မှာ run ပေးမည်
+    threading.Thread(target=run_dummy_server, daemon=True).start()
+    
+    # Telegram Bot ကို စတင်မည်
+    print("🤖 All-in-One Bot 100% Ready...")
+    app.run_polling()
 if __name__ == '__main__':
     main()
